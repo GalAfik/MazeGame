@@ -1566,6 +1566,11 @@ PrefabInstance:
       propertyPath: Configuration.Gravity
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 3302701210833445968, guid: 919453148154f834784bad1c3bd79e0f,
+        type: 3}
+      propertyPath: Configuration.SightBonus
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3302701210833445971, guid: 919453148154f834784bad1c3bd79e0f,
         type: 3}
       propertyPath: m_LocalPosition.y

@@ -17,6 +17,7 @@ namespace MazeGame
 			public float Speed; // The player's speed
 			public float Gravity; // The player's downward acceleration
 			public float JumpForce; // How much force to apply to a player character when they jump
+			public float StartingAnxietyLevel; // How much anxiety allowance/health the player has
 
 			[Header("Temporarily added to public vars")]
 			public float SpeedBonus; // The player's added speed bonus
@@ -31,6 +32,8 @@ namespace MazeGame
 			public Vector3 Move = Vector3.zero; // The movement vector for the character
 			public Vector3 VerticalMove = Vector3.zero; // The vertical movement affected by gravity
 			public Vector3 Look = Vector3.zero; // The forward vector for the character
+			public float TotalAnxiety; // The total amount of anxiety/health the player starts with
+			public float CurrentAnxiety; // The player's current anxiety/health level
 		}
 
 		public PlayerConfigurationData Configuration = new PlayerConfigurationData();
@@ -41,6 +44,10 @@ namespace MazeGame
 		{
 			// Get the character controller component if not null, otherwise create a new controller
 			State.Controller = GetComponent<CharacterController>();
+
+			// Set the player's starting/total anxiety level
+			State.TotalAnxiety = Configuration.StartingAnxietyLevel + Configuration.AnxietyBonus;
+			State.CurrentAnxiety = State.TotalAnxiety; // Start off with full anxiety
 		}
 
 		// Update is called once per frame
@@ -50,7 +57,8 @@ namespace MazeGame
 			State.Move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 			Debug.Assert(State.Move != null);
 			// Apply horizontal move vector
-			State.Controller.Move(State.Move.normalized * Configuration.Speed * Time.deltaTime);
+			float ActualSpeed = Configuration.Speed + Configuration.SpeedBonus;
+			State.Controller.Move(State.Move.normalized * ActualSpeed * Time.deltaTime);
 
 			// Apply gravity move vector
 			State.VerticalMove.y -= Configuration.Gravity * Time.deltaTime;
