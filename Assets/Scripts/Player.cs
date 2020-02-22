@@ -23,6 +23,9 @@ namespace MazeGame
 			public float SpeedBonus; // The player's added speed bonus
 			public float SightBonus; // The distance the player can see - this is applied to the camera distance from the player
 			public float AnxietyBonus; // A bonus applied to the player's anxiety/health
+
+			[Header("Anxiety Configuration")]
+			public float AnxietyIncreaseRate;
 		}
 
 		[Serializable]
@@ -35,6 +38,11 @@ namespace MazeGame
 			public float TotalAnxiety; // The total amount of anxiety/health the player starts with
 			public float CurrentAnxiety; // The player's current anxiety/health level
 		}
+
+		// Return the player's total anxiety level at the start of the game
+		public float GetTotalAnxiety(){ return State.TotalAnxiety; }
+		// Return the player's current anxiety level
+		public float GetCurrentAnxiety(){ return State.CurrentAnxiety; }
 
 		public PlayerConfigurationData Configuration = new PlayerConfigurationData();
 		private PlayerStateData State = new PlayerStateData();
@@ -73,6 +81,23 @@ namespace MazeGame
 			// look toward the forward direction
 			if (State.Move != Vector3.zero) transform.rotation = Quaternion.LookRotation(State.Move);
 			Debug.DrawLine(transform.position, transform.position + transform.forward, Color.blue);
+
+			HandleAnxiety();
+		}
+
+		private void HandleAnxiety()
+		{
+			// Handle Anxiety
+			if (State.CurrentAnxiety < 0) State.CurrentAnxiety = 0;
+			if (State.CurrentAnxiety >= State.TotalAnxiety)
+			{
+				// TODO: this player dies!
+			}
+			else
+			{
+				// Increase anxiety over time
+				State.CurrentAnxiety += Configuration.AnxietyIncreaseRate * Time.deltaTime;
+			}
 		}
 
 		private bool IsGrounded()
@@ -88,8 +113,10 @@ namespace MazeGame
 			{
 				// Only add the vertical velocity if it would not exceed the maximum jump force
 				if (State.VerticalMove.y + Configuration.JumpForce <= Configuration.JumpForce)
+				{
 					State.VerticalMove.y += Configuration.JumpForce;
 					//Debug.Log("Player::Jump");
+				}
 			}
 		}
 	}
