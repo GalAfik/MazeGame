@@ -26,6 +26,8 @@ namespace MazeGame
 
 			[Header("Anxiety Configuration")]
 			public float AnxietyIncreaseRate;
+			public float TimeToBreakCheese; // How long, in seconds, it takes this player to break down cheese into fragments
+			public float TimeToBreakWall; // How long, in seconds, it takes this player to break down a wall object
 		}
 
 		[Serializable]
@@ -97,6 +99,7 @@ namespace MazeGame
 			{
 				// Increase anxiety over time
 				State.CurrentAnxiety += Configuration.AnxietyIncreaseRate * Time.deltaTime;
+				Debug.Log(State.CurrentAnxiety);
 			}
 		}
 
@@ -117,6 +120,51 @@ namespace MazeGame
 					State.VerticalMove.y += Configuration.JumpForce;
 					//Debug.Log("Player::Jump");
 				}
+			}
+		}
+
+		public void Break()
+		{
+			// If the player is grounded, add the jumpforce to the vertical vector
+			if (IsGrounded())
+			{
+				// Only add the vertical velocity if it would not exceed the maximum jump force
+				if (State.VerticalMove.y + Configuration.JumpForce <= Configuration.JumpForce)
+				{
+					State.VerticalMove.y += Configuration.JumpForce;
+					//Debug.Log("Player::Jump");
+				}
+			}
+		}
+
+		public void PickUp()
+		{
+			// If the player is grounded, add the jumpforce to the vertical vector
+			if (IsGrounded())
+			{
+				// Only add the vertical velocity if it would not exceed the maximum jump force
+				if (State.VerticalMove.y + Configuration.JumpForce <= Configuration.JumpForce)
+				{
+					State.VerticalMove.y += Configuration.JumpForce;
+					//Debug.Log("Player::Jump");
+				}
+			}
+		}
+
+		private void OnTriggerEnter(Collider other)
+		{
+			switch (other.tag)
+			{
+				case "CheeseFragment": // Decrease player anxiety and destroy the cheese fragment
+					{
+						// Decrease the player's anxiety
+						State.CurrentAnxiety -= other.gameObject.GetComponent<CheeseFragment>().Configuration.AnxietyValue;
+						// Destroy the cheese fragment
+						Destroy(other.gameObject);
+						break;
+					}
+				default:
+					break;
 			}
 		}
 	}
